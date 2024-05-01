@@ -3,6 +3,8 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+const axios = require('axios');
+
 
 public_users.post("/register", (req,res) => {
     const username = req.body.username;
@@ -68,5 +70,98 @@ public_users.get('/review/:isbn',function (req, res) {
     }
   return res.status(300).json({message: "Yet to be implemented"});
 });
+
+
+// Function to get the list of books available
+async function getBooks() {
+    try {
+      const response = await axios.get('https://be-5000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching books:', error);
+      throw error;
+    }
+  }
+  
+  
+  (async () => {
+    try {
+      const books = await getBooks();
+      console.log('Books available:', books);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  })();
+
+
+// Function to get book details by ISBN
+
+async function getBookByISBN(isbn) {
+    
+  try {
+    
+    const response = await axios.get(`https://be-5000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/isbn/${isbn}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching book details:', error);
+    throw error;
+  }
+}
+
+// Example usage
+(async () => {
+  try {
+    const isbn = '9780385474542'; // Replace with the ISBN you want to search for
+    const book = await getBookByISBN(isbn);
+    console.log('Book details:', book);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+})();
+
+
+// Function to get book details based on author
+async function getBooksByAuthor(author) {
+    try {
+      const response = await axios.get(`https://be-5000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/author/${author}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching books by author:', error);
+      throw error;
+    }
+  }
+  
+ 
+  (async () => {
+    try {
+      const author = "Samuel Beckett"; 
+      const books = await getBooksByAuthor(author);
+      console.log(`Books by ${author}:`, books);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  })();
+
+  // Function to get book details based on title
+async function getBooksByTitle(title) {
+    try {
+      const response = await axios.get(`https://be-5000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/title/${title}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching books by title:', error);
+      throw error;
+    }
+  }
+  
+ 
+  (async () => {
+    try {
+      const title = "One Thousand and One Nights"; 
+      const books = await getBooksByTitle(title);
+      console.log(`Book is  ${title}:`, books);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  })();
 
 module.exports.general = public_users;
