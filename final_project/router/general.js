@@ -4,7 +4,6 @@ let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
-
 public_users.post("/register", (req,res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -29,18 +28,12 @@ public_users.get('/',function (req, res) {
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-    
-
-
-    // Find the book with the specified ISBN
-    const book = books.find((book) => book.isbn === isbn);
-
+    const isbn = req.params.isbn;
+    const book = Object.values(books).find(book => book.isbn === isbn);
     if (book) {
-        // If a book with the specified ISBN is found, send it as the response
-        res.send(book);
+      res.json(book);
     } else {
-        // If no book with the specified ISBN is found, send a 404 Not Found response
-        res.status(404).send("Book not found");
+      res.status(404).send('Book not found');
     }
   return res.status(300).json({message: "Yet to be implemented"});
  });
@@ -48,22 +41,31 @@ public_users.get('/isbn/:isbn',function (req, res) {
 // Get book details based on author
 public_users.get('/author/:author', function (req, res) {
     const author = req.params.author;
-    
-    // Filter books by the specified author
-    const booksByAuthor = books.filter((book) => book.author === author);
-    
-    // Send the filtered books as the response
-    res.send(booksByAuthor);
+    const booksByAuthor = Object.values(books).filter(book => book.author === author);
+    res.json(booksByAuthor);
+
 });
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
+    const title = req.params.title;
+    const book = Object.values(books).find(book => book.title === title);
+    if (book) {
+      res.json(book);
+    } else {
+      res.status(404).send('Book not found');
+    }
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
+    const isbn = req.params.isbn;
+    const book = Object.values(books).find(book => book.isbn === isbn);
+    if (book) {
+      res.json(book.reviews);
+    } else {
+      res.status(404).send('Review for ISBN not found');
+    }
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
